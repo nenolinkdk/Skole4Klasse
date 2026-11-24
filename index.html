@@ -13,6 +13,7 @@
   <div class="pill">🎁 <span id="hud-trofæer">0</span>/12</div>
   <button id="btn-status">📊 Status</button>
   <button id="btn-foraelder">👨‍👩‍👦 Forældre</button>
+  <button id="btn-indstillinger">⚙️ Indstillinger</button>
 </header>
 <div class="hoved" id="app"></div>
 <div class="overlay" id="overlay"><div class="indhold" id="overlay-indhold"></div></div>
@@ -33,22 +34,45 @@ var SIDE = [
  {fil:"nyheder.html",ikon:"📰",navn:"Nyheder for børn",tag:"Læs korte, rigtige nyheder og svar på spørgsmålene."},
  {fil:"ai.html",ikon:"🤖",navn:"Om AI",tag:"Hvad er kunstig intelligens? Korte tekster og quiz med forklaringer."}
 ];
+var TILES = {"laesning.html":"laesning","stavning.html":"stavning","bogstaver.html":"bogstaver","synonymer.html":"synonym","matematik.html":"matematik","nyheder.html":"nyheder","ai.html":"ai"};
 var app = document.getElementById("app");
-app.innerHTML = "<h2 style='text-align:center;color:#1d3557'>Hej! Vælg et område at træne 🚀</h2><div class='menu' id='menukort'></div>";
+
+/* ============ DASHBOARD ============ */
+function totalMestrede(){ return ALLE_OMRAADER.reduce(function(a,o){ return a+S.områder[o].mestrede.length; },0); }
+function bedsteNiveau(){ return Math.max.apply(null, ALLE_OMRAADER.map(function(o){ return S.områder[o].niveau; })); }
+function tegnDashboard(){
+  var navn = S.indstillinger.navn;
+  var hilsen = navn? "Hej "+navn+"! 👋" : "Hej! 👋";
+  var html = "<div class='kasse' style='background:linear-gradient(135deg,#eef4ff,#eafaf0)'>"+
+    "<h2 style='margin-top:0'>"+hilsen+"</h2>"+
+    "<div style='display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px'>"+
+      "<div style='background:#fff;border-radius:12px;padding:12px;text-align:center'><h3>🌟 Stjerner</h3><div style='font-size:1.5rem'><b>"+S.stjerner+"</b></div>"+(S.stjerner?"":"<div class='tagline'>Klø på!</div>")+"</div>"+
+      "<div style='background:#fff;border-radius:12px;padding:12px;text-align:center'><h3>🎁 Trofæer</h3><div style='font-size:1.2rem'>"+("🏅".repeat(S.trofæer)||"Ingen endnu")+"</div></div>"+
+      "<div style='background:#fff;border-radius:12px;padding:12px;text-align:center'><h3>✅ Mestrede opgaver</h3><div style='font-size:1.5rem'><b>"+totalMestrede()+"</b></div></div>"+
+      "<div style='background:#fff;border-radius:12px;padding:12px;text-align:center'><h3>🚀 Højeste niveau</h3><div style='font-size:1.2rem'>"+NIV[bedsteNiveau()].navn+"</div></div>"+
+    "</div>"+
+    "<p style='margin-bottom:0'><button class='btn grå' onclick='visIndstillinger()'>⚙️ Indstillinger</button>"+
+    " <button class='btn blå' onclick='visStatus()'>📊 Status & historiebog</button></p>"+
+  "</div>"+
+  "<h2 style='text-align:center;color:#1d3557;margin-top:18px'>Vælg et område at træne 🚀</h2>"+
+  "<div class='menu' id='menukort'></div>";
+  return html;
+}
+app.innerHTML = tegnDashboard();
 var m = document.getElementById("menukort");
 SIDE.forEach(function(k){
-  var el = k.kommer? document.createElement("div") : document.createElement("a");
+  var el = document.createElement("a");
   el.className = "kort";
-  if(!k.kommer) el.href = k.fil;
-  if(k.kommer) el.style.opacity=".55";
+  el.href = k.fil;
   var prof = "";
-  var omr = {"laesning.html":"laesning","stavning.html":"stavning","bogstaver.html":"bogstaver","synonymer.html":"synonym","matematik.html":"matematik","nyheder.html":"nyheder","ai.html":"ai"}[k.fil];
+  var omr = TILES[k.fil];
   if(omr){
     var oo=S.områder[omr];
     var pct = Math.min(100, Math.round(oo.mestrede.length/NIV[oo.niveau].behov*100));
     prof = "<div class='skridt'><i style='width:"+pct+"%'></i></div><div class='tagline'>Niveau "+oo.niveau+" ("+NIV[oo.niveau].navn+") · "+oo.mestrede.length+" mestrede opgaver</div>";
+  } else {
+    prof = "<div class='tagline'>🪄 Kreativt område – se historiebog under 📊 Status</div>";
   }
-  if(k.kommer) prof += "<div class='tagline'>⏳ Under udvikling</div>";
   el.innerHTML = "<div class='ikon'>"+k.ikon+"</div><h2>"+k.navn+"</h2><p>"+k.tag+"</p>"+prof;
   m.appendChild(el);
 });
