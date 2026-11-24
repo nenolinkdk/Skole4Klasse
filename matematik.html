@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Matematik – Skriv &amp; Lær</title>
+<title>Matematik-eventyr – Skriv &amp; Lær</title>
 <link rel="stylesheet" href="faelles.css" />
 </head>
 <body>
 <header>
-  <h1>➗ Matematik</h1>
-  <div class="pill">🌟 <span id="hud-stjerner">0</span></div>
-  <div class="pill">🎁 <span id="hud-trofæer">0</span>/12</div>
+  <h1>⛏️ MATEMATIK-EVENTYR 🧱</h1>
+  <div class="pill">💎 <span id="hud-diamanter">0</span> diamanter</div>
   <a class="btn grå" href="index.html">🏠 Menu</a>
   <button id="btn-status">📊 Status</button>
   <button id="btn-foraelder">👨‍👩‍👦 Forældre</button>
@@ -24,9 +23,236 @@
 <script src="faelles/motor.js"></script>
 <script>
 "use strict";
-startSide("matematik");
+/* opsæt gemt fremskridt til eventyret */
+if(!S.matVerdener) S.matVerdener = {};
+if(typeof S.diamanter !== "number") S.diamanter = 0;
+gem(S);
+function opdaterEventyrHUD(){
+  var d = document.getElementById("hud-diamanter");
+  if(d) d.textContent = S.diamanter;
+}
+
+/* ---- tilfældige tal + navne: opgaverne er aldrig ens ---- */
+function slump(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function vælg(liste){ return liste[slump(0,liste.length-1)]; }
+var NAVNE = ["Emil","Freja","Noah","Alma","Villads","Zoe","Emma","Peter","Malu","Oskar","Clara","Benji"];
+
+/* verbale feedback-fraser */
+var ROS = ["Godt klaret! 💪","Flot regnet! 🌟","Super! 🎉","Wow, det var hurtigt! ⭐","Perfekt! 👏","Skarpt regnet! 🔥","Du klarede det! 🎈","Sådan! Videre med fornøjelsen 😄","Kanon! 💥","Bravo! 🥳"];
+var OPMUNTRING = ["Næsten! Prøv igen – eller tag et vink 💡","Helt tæt på, jeg kan mærke det! 💪","Ikke helt – men fejl er bare øvelse. Prøv igen!","Det var ikke det rigtige tal denne gang. Prøv igen eller tryk 💡"];
+
+/* opgave-generator pr. verden: returnerer {opgave, svar[], vink} */
+var GENERATOR = {
+ v1: function(){
+  var n = vælg(NAVNE), ting = vælg(["klodser","guldklumper","brikker","kort","bøller","æbler"]);
+  var a = slump(15,80), b = slump(5,a-2);
+  if(Math.random()<0.5){
+    var vare1 = vælg(["En mælk","En is","Et brød","En banan","En juice"]), vare2 = vælg(["et brød","en kage","en æble juice","en bolle"]);
+    var p1 = slump(5,25), p2 = slump(5,25);
+    return {opgave:vare1+" koster "+p1+" kroner og "+vare2+" koster "+p2+" kroner. Hvad koster de tilsammen?", svar:[String(p1+p2)], vink:"Tilsammen betyder plus: "+p1+" + "+p2+"."};
+  }
+  return {opgave:n+" har "+a+" "+ting+". Men "+b+" af dem falder ned i graven og bliver væk. Hvor mange "+ting+" har "+n+" tilbage?", svar:[String(a-b)], vink:"Der bliver færre, så det er minus: "+a+" - "+b+"."};
+ },
+ v2: function(){
+  var a = slump(3,12), b = slump(2,10);
+  var skabelon = vælg([
+    {t:"I Minecraft har du "+a+" kasser med "+b+" klodser i hver. Hvor mange klodser har du i alt?", v:a+" kasser med "+b+" i hver: "+a+" x "+b+"."},
+    {t:"En bijflok har "+a+" bier, og hver bi samler "+b+" blomster. Hvor mange blomster samler de i alt?", v:a+" bier à "+b+" blomster: "+a+" x "+b+"."},
+    {t:"Du bygger "+a+" tårne, der er "+b+" klodser høje. Hvor mange klodser bruger du i alt?", v:a+" tårne à "+b+" klodser: "+a+" x "+b+"."},
+    {t:"En chokoladeplade har "+a+" rækker med "+b+" brikker i hver. Hvor mange brikker er der i alt?", v:a+" rækker à "+b+" brikker: "+a+" x "+b+"."},
+    {t:"Hver spiller får "+b+" diamanter, og I er "+a+" spillere. Hvor mange diamanter skal der i alt?", v:a+" spillere à "+b+" diamant(er): "+a+" x "+b+"."}
+  ]);
+  return {opgave:skabelon.t, svar:[String(a*b)], vink:skabelon.v};
+ },
+ v3: function(){
+  var kvot = slump(2,9), gang = slump(2,9), total = kvot*gang;
+  var ting = vælg(["klodser","nødder","æbler","kager","robux","brikker"]);
+  var skabelon = vælg([
+    {t:total+" "+ting+" skal deles ligeligt mellem "+gang+" venner. Hvor mange "+ting+" får hver ven?", v:"Hvad ganget med "+gang+" giver "+total+"? Prøv gang-tabellen."},
+    {t:"En flok på "+gang+" ekorn har "+total+" "+ting+" sammen. De deler ligeligt. Hvor mange får hvert ekorn?", v:total+" delt i "+gang+". Hvad ganget med "+gang+" giver "+total+"?"},
+    {t:"Du har "+total+" "+ting+" i "+gang+" lige høje tårne. Hvor mange "+ting+" er der i hvert tårn?", v:total+" / "+gang+" – eller: gang med "+gang+" indtil du rammer "+total+"."}
+  ]);
+  return {opgave:skabelon.t, svar:[String(kvot)], vink:skabelon.v};
+ },
+ v4: function(){
+  var sl = vælg(["halv","kvart","tier"]);
+  if(sl==="halv"){
+    var N = slump(4,15)*2;
+    return {opgave:"Hvad er 1/2 af "+N+" klodser? (Svar med et tal)", svar:[String(N/2)], vink:"Halvdelen af "+N+": "+N+" delt i 2."};
+  }
+  if(sl==="kvart"){
+    var N2 = slump(3,15)*4;
+    return Math.random()<0.5 ?
+      {opgave:"En pizza er skåret i "+N2+" skiver. Du spiser 1/4 af pizzaen. Hvor mange skiver spiser du?", svar:[String(N2/4)], vink:N2+" delt i 4 dele."} :
+      {opgave:"Skriv 1/4 som decimaltal. (Brug komma)", svar:["0,25","0.25"], vink:"1/4 = 25 af 100 dele = 0,25."};
+  }
+  var type = slump(0,2);
+  if(type===0){
+    var g = slump(2,3), N3 = g*slump(2,8);
+    return {opgave:"Hvad er 1/"+g+" af "+N3+" boller? (Svar med et tal)", svar:[String(N3/g)], vink:N3+" delt i "+g+" dele."};
+  }
+  if(type===1){
+    return {opgave:"Skriv 1/2 som decimaltal. (Brug komma)", svar:["0,5","0.5","0,50","0.50"], vink:"1/2 = 5 af 10 dele = 0,5."};
+  }
+  var d1 = vælg(["0,5","0,25","0,75"]);
+  var d2 = vælg(["0,25","0,5","0,75"]);
+  var sum = (parseFloat(d1.replace(",","."))+parseFloat(d2.replace(",",".")));
+  var sTxt = String(sum).replace(".",",");
+  return {opgave:"Hvad er "+d1+" + "+d2+"? Skriv svaret som decimaltal med komma.", svar:[sTxt, sTxt.replace(",",".")], vink:"Tænk i øre: 0,25 er 25 øre og 0,5 er 50 øre. Læg ørene sammen og sæt komma tilbage."};
+ },
+ v5: function(){
+  var type = slump(0,4);
+  var n = vælg(NAVNE);
+  if(type===0){
+    var p1 = slump(8,30), p2 = slump(8,30), betalt = vælg([50,100,100,200]);
+    var pris = p1+p2;
+    if(pris>=betalt){ betalt = pris + slump(5,40); }
+    return {opgave:"En is koster "+p1+" kroner og en saft koster "+p2+" kroner. Du betaler med "+betalt+" kroner. Hvor mange kroner får du i byttepenge?", svar:[String(betalt-pris)], vink:"Først prisen tilsammen: "+p1+" + "+p2+" = "+pris+". Derefter: "+betalt+" - "+pris+"."};
+  }
+  if(type===1){
+    var t1 = slump(7,23), m1 = slump(10,55), slut = t1 + Math.floor(m1/60), mRest = m1 % 60;
+    var p = function(x){ return (x<10? "0":"")+x; };
+    var sTxt = p(slut)+":"+p(mRest);
+    return {opgave:"En bus kører kl. "+p(t1)+":00 og er på vej i "+m1+" minutter. Hvornår er den fremme? (Skriv fx 15:30)", svar:[sTxt, sTxt.replace(":","")], vink:m1+" minutter = "+Math.floor(m1/60)+" time(r) og "+(m1%60)+" minutter. Læg det til kl. "+p(t1)+":00."};
+  }
+  if(type===2){
+    var km = slump(2,12)*slump(2,4), timer = slump(2,4);
+    if(km % timer !== 0){ km = km - (km % timer); }
+    return {opgave:n+" cykler "+km+" km på "+timer+" timer. Hvor mange km cykler "+n+" i gennemsnit pr. time?", svar:[String(km/timer)], vink:km+" km delt på "+timer+" timer."};
+  }
+  if(type===3){
+    var kg = slump(2,6), pris2 = slump(6,15);
+    return {opgave:n+" køber "+kg+" kg æbler til "+pris2+" kroner pr. kilo. Hvad koster æblerne i alt?", svar:[String(kg*pris2)], vink:kg+" kilo à "+pris2+" kroner: "+kg+" x "+pris2+"."};
+  }
+  var m1 = slump(1,59), m2 = slump(1,59);
+  return {opgave:"Skolekoncerten varer "+(m1+m2)+" minutter. Første del varer "+m1+" minutter. Hvor mange minutter varer anden del?", svar:[String(m2)], vink:(m1+m2)+" - "+m1+" = ?"};
+ }
+};
+
+function lavRunde(verdenId){
+  /*lav 8 friske opgaver med tilfældige tal hver gang*/
+  var ud = [];
+  for(var i=0;i<8;i++){
+    var o = GENERATOR[verdenId]();
+    o.id = verdenId+"-r"+Date.now()+"-"+i;
+    ud.push(o);
+  }
+  return ud;
+}
+
+function visVerdener(){
+  var app = document.getElementById("app");
+  var html = "<h2 class='område'>⛏️ Matematik-eventyr 🧱</h2>"+
+   "<p>4. klasse · Regn dig gennem 5 verdener! Opgaverne har nye tal hver gang, så du kan øve dig igen og igen.</p>"+
+   "<div class='menu'>";
+  VERDENER.forEach(function(v){
+    var antal = S.matVerdener[v.id] || 0;
+    var vundet = antal >= 7;
+    html += "<a class='kort' href='#' onclick='startVerden(\""+v.id+"\");return false'"+(vundet? " style='border-color:var(--grøn)'":"")+">"+
+      "<div class='ikon'>"+v.ikon+"</div>"+
+      "<h2>"+v.navn+"</h2>"+
+      "<p>"+v.tag+"</p>"+
+      (vundet? "<div class='feedback god' style='margin-top:8px'>🏆 Verdenen er vundet! ("+antal+" rigtige)</div>"
+             : "<div class='tagline' style='margin-top:8px'>✅ "+antal+" rigtige · 7+ for at vinde</div>")+
+    "</a>";
+  });
+  html += "</div>";
+  app.innerHTML = html;
+  opdaterEventyrHUD();
+}
+
+function startVerden(id){
+  var v = VERDENER.filter(function(x){return x.id===id;})[0];
+  var app = document.getElementById("app");
+  app.innerHTML = "<h2 class='område'>"+v.ikon+" "+v.navn+"</h2>"+
+   "<p class='tagline'>"+v.tag+" · ✅ "+(S.matVerdener[v.id]||0)+" rigtige i denne verden (7+ vinder den). "+
+   "Forkert svar? Opgaven kommer igen. Nye tal hver runde! Tryk 💡 for et vink.</p>"+
+   "<div id='spil'></div>"+
+   "<p><button class='btn grå' onclick='visVerdener()'>⬅️ Tilbage til verdenerne</button></p>";
+  var holder = document.getElementById("spil");
+  var køen = lavRunde(id);
+  var udestående = [];
+  var rigtige = 0;
+  function visOpgave(){
+    if(!køen.length){ færdigVerden(v, rigtige); return; }
+    var o = køen.shift();
+    var wrap = document.createElement("div");
+    wrap.className = "kasse";
+    wrap.innerHTML = "<h3 style='margin-top:0'>"+v.ikon+" Opgave (7+ vinder verdenen)</h3>"+
+      "<p style='font-size:1.1rem;line-height:1.6'>"+o.opgave+"</p>"+
+      "<input class='tekst' id='sv' placeholder='Skriv dit svar her…' style='font-size:1.2rem;text-align:center'>"+
+      "<div class='feedback' id='fb'></div><div id='vh'></div>"+
+      "<div id='knapper'></div>";
+    holder.appendChild(wrap);
+    document.getElementById("sv").focus();
+    var knapper = document.getElementById("knapper");
+    var vink = document.createElement("button");
+    vink.className="btn orange"; vink.style.marginTop="8px"; vink.textContent="💡 Få et vink";
+    vink.onclick = function(){ document.getElementById("vh").innerHTML = "<p class='tagline'>💡 "+o.vink+"</p>"; };
+    knapper.appendChild(vink);
+    var b = document.createElement("button");
+    b.className="btn grøn"; b.style.marginLeft="8px"; b.style.marginTop="8px"; b.textContent="Tjek mit svar ✅";
+    b.onclick = function(){
+      var gæt = (document.getElementById("sv").value||"").trim().replace(/\s+/g,"");
+      var norm = gæt.replace(/,/g,".").toLowerCase();
+      var normal = o.svar.map(function(sv){ return String(sv).trim().toLowerCase(); });
+      var rig = normal.indexOf(norm)>=0 || normal.indexOf(gæt.toLowerCase())>=0 ||
+                normal.map(function(sv){return sv.replace(/\./g,"");}).indexOf(norm.replace(/\./g,""))>=0;
+      var fb = document.getElementById("fb");
+      if(!gæt){ fb.className="feedback skidt"; fb.textContent="Skriv et svar først 😉"; return; }
+      if(rig){
+        rigtige++;
+        S.matVerdener[v.id] = (S.matVerdener[v.id]||0)+1;
+        S.diamanter++;
+        givStjerner(1, false);
+        fb.className="feedback god";
+        fb.innerHTML = "✅ "+vælg(ROS)+" Du får 💎 1 diamant."+(S.matVerdener[v.id]>=7? " 🏆 Verdenen er VUNDET!":"");
+        opdaterEventyrHUD();
+        if(S.matVerdener[v.id]>=7 && S.områder.matematik.mestrede.indexOf(v.id)<0){
+          S.områder.matematik.mestrede.push(v.id);
+        }
+        gem(S);
+        setTimeout(function(){ wrap.remove(); visOpgave(); }, 1400);
+      } else {
+        fb.className="feedback skidt";
+        fb.textContent = vælg(OPMUNTRING);
+        vink.onclick();
+        /* opgaven lægges tilbage bagest i rækken med NYE tal siden id er nyt næste gang den er genereret */
+        setTimeout(function(){ wrap.remove(); køen.push(o); udestående.push(1); visOpgave(); }, 1600);
+      }
+    };
+    knapper.appendChild(b);
+  }
+  visOpgave();
+}
+
+function færdigVerden(v, rigtige){
+  var vundet = (S.matVerdener[v.id]||0) >= 7;
+  document.getElementById("spil").innerHTML =
+   "<div class='kasse' style='text-align:center;background:linear-gradient(135deg,#fff9e6,#e6f9ec)'>"+
+   "<h2>"+(vundet? "🏆 "+v.navn+" er VUNDET!" : v.ikon+" Runde slut i "+v.navn)+"</h2>"+
+   "<p>"+(vundet? "Stærkt gået! Du har nu "+S.matVerdener[v.id]+" rigtige i denne verden."
+    : "Du fik "+rigtige+" rigtige i denne runde. I alt "+(S.matVerdener[v.id]||0)+" i "+v.navn+" – 7+ vinder verdenen. Nye opgaver med friske tal venter!")+"</p>"+
+   "<button class='btn grøn' onclick='startVerden(\""+v.id+"\")'>Kør en runde mere</button> "+
+   "<a class='btn blå' href='index.html' style='margin-left:8px'>🏠 Til forsiden</a></div>";
+}
+
+/* Forældre-knapperne på denne side: egen besked med forklaringer pr. verden */
+function matForælder(){
+  var h = "<p>Her er en kort vejledning til hver verden, så I kan hjælpe derhjemme. Opgaverne laves med tilfældige tal hver gang, så barnet ikke kan udenadslære en fast liste – men skal regne.</p>";
+  VERDENER.forEach(function(v){
+    h += "<h3>"+v.ikon+" "+v.navn+" <span class='lvlbadge'>"+v.tag+"</span></h3><p>"+v.forael+"</p>";
+  });
+  h += "<h3>🏆 Belønning</h3><p>🌟 1 stjerne og 💎 1 diamant pr. rigtig opgave. 7+ rigtige i en verden = verdenen er vundet. Forkert svar giver ingen straf – opgaven kommer bare igen med et par nye ord.</p>";
+  vis("👨‍👩‍👦 Til forældre (matematik-eventyr)", h);
+}
+
+visVerdener();
 bindFællesknapper();
+var bf = document.getElementById("btn-foraelder");
+if(bf) bf.onclick = matForælder;
 opdaterHUD();
+opdaterEventyrHUD();
 </script>
 </body>
 </html>

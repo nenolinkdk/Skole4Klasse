@@ -73,10 +73,10 @@ function startSerie(){
     "<p>"+s.situation+"</p>"+
     "<div style='position:relative;max-width:420px;border:3px solid #1d3557;border-radius:14px;overflow:hidden;background:#fff'>"+
       "<svg viewBox='0 0 400 300' width='100%' style='display:block'>"+tegnScene(s.scene)+"</svg>"+
-      "<div class='bobbel' style='left:8px;top:8px;width:180px;height:70px'><input class='boble-input' id='b1' value=\""+s.start1.replace(/"/g,"&quot;")+"\"></div>"+
-      "<div class='bobbel' style='right:8px;bottom:8px;width:180px;height:70px'><input class='boble-input' id='b2' value=\""+s.start2.replace(/"/g,"&quot;")+"\"></div>"+
+      "<div class='bobbel' style='left:8px;top:8px;width:180px;height:70px'><input class='boble-input' id='b1' placeholder='Hvad siger deroppe?' value=\""+s.start1.replace(/"/g,"&quot;")+"\"></div>"+
+      "<div class='bobbel' style='right:8px;bottom:8px;width:180px;height:70px'><input class='boble-input' id='b2' placeholder='Hvad siger dernede?' value=\""+s.start2.replace(/"/g,"&quot;")+"\"></div>"+
     "</div>"+
-    "<p class='tagline'>✍️ Skriv i boblerne: Hvad siger <b>"+s.figur1+"</b> (øverst) og <b>"+s.figur2+"</b> (nederst)? Du må gøre samtalen helt din egen – brug din fantasi!</p>"+
+    "<p class='tagline'>✍️ Boblerne er næsten tomme – højst ét startord i forvejen. Skriv selv resten: Hvad siger <b>"+s.figur1+"</b> (øverst) og <b>"+s.figur2+"</b> (nederst)? Startordet må du bygge videre på eller skrive om. Brug din fantasi!</p>"+
     "<button class='btn grøn' id='gemSerie'>Gem min tegneserie 🎨</button>"+
     "<button class='btn lilla' id='nySerie' style='margin-left:8px'>Ny tegneserie 🎲</button>"+
     svaerKnap("serie")+

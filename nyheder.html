@@ -24,7 +24,73 @@
 <script src="faelles/motor.js"></script>
 <script>
 "use strict";
-startSide("nyheder");
+/* Nyheder-siden: læseforståelse + fake news-detektor */
+var app = document.getElementById("app");
+function visForsideNyheder(){
+  app.innerHTML = "<h2 class='område'>📰 Nyheder for børn</h2>"+
+   "<p>Vælg, hvad du vil træne:</p>"+
+   "<div class='emnevalg'>"+
+   "<button class='btn grøn' id='mode-laes'>📖 Læs rigtige nyheder (forstå dem og svar)</button>"+
+   "<button class='btn orange' id='mode-detekt'>🕵️ Detektør: ægte nyhed eller fake news?</button>"+
+   "</div><div style='margin-top:14px' id='indhold'></div>";
+  document.getElementById("mode-laes").onclick = startLæsning;
+  document.getElementById("mode-detekt").onclick = startDetektør;
+}
+function startLæsning(){
+  document.getElementById("indhold").innerHTML = "";
+  var holder = document.createElement("div");
+  holder.id = "runde-holder";
+  app.appendChild(holder);
+  kørRunde("nyheder", holder);
+}
+function startDetektør(){
+  var holder = document.getElementById("indhold");
+  var liste = FAKTA.slice().sort(function(){ return Math.random()-0.5; });
+  var idx = 0;
+  function visSag(){
+    if(idx >= liste.length){
+      holder.innerHTML = "<div class='kasse' style='text-align:center'><h2>🕵️ Detektør-tur færdig!</h2>"+
+        "<p>Du har gennemset alle "+liste.length+" sager. Prøv en ny tur – rækkefølgen er blandet hver gang.</p>"+
+        "<button class='btn grøn' onclick='startDetektør()'>🔎 Ny detektør-tur</button></div>";
+      return;
+    }
+    var f = liste[idx++];
+    holder.innerHTML = "<h2 class='område'>🕵️ Nyheds-detektøren</h2>"+
+     "<div class='kasse'>"+
+      "<h3>Sag "+idx+" af "+liste.length+": "+f.titel+"</h3>"+
+      "<div class='læsetekst'>"+f.tekst+"</div>"+
+      "<p><b>Er denne nyhed ægte, eller er den fake?</b></p>"+
+      "<div class='emnevalg'>"+
+      "<button class='btn grøn' id='valg-rigtig'>✅ Ægte nyhed</button>"+
+      "<button class='btn rød' id='valg-fake'>🚨 Fake news!</button></div>"+
+      "<div class='feedback' id='fb'></div><div id='vh'></div>"+
+      svaerKnap("nyheder")+
+     "</div>";
+    var gjort = false;
+    document.getElementById("valg-rigtig").onclick = function(){ bedøm(true); };
+    document.getElementById("valg-fake").onclick = function(){ bedøm(false); };
+    function bedøm(gæt){
+      if(gjort) return; gjort = true;
+      var rig = gæt === f.rigtig;
+      var fb = document.getElementById("fb");
+      registrér("nyheder", f.id, rig, fb,
+        "Rigtigt! " + (f.rigtig? "Den var ægte – godt opsnappet!" : "Den var fake – du gennemskuede den!"),
+        "Ikke helt. Se detektiv-forklaringen herunder.");
+      fb.className = rig? "feedback god" : "feedback skidt";
+      fb.innerHTML = (rig? "✅ Korrekt dom! " : "❌ Ikke denne gang. ")+
+        (f.rigtig? "Sagen var en <b>ægte</b> nyhed." : "Sagen var <b>fake news</b>.")+
+        "<div id='vh2'></div>";
+      var vh = document.getElementById("vh2");
+      vh.innerHTML = "<p class='tagline'>🔍 <b>Detektiv-forklaring:</b> "+f.hvorfor+"</p>";
+      var videre = document.createElement("button");
+      videre.className="btn blå"; videre.style.marginTop="10px"; videre.textContent = "Næste sag ➡️";
+      videre.onclick = visSag;
+      vh.appendChild(videre);
+    }
+  }
+  visSag();
+}
+visForsideNyheder();
 bindFællesknapper();
 opdaterHUD();
 </script>
