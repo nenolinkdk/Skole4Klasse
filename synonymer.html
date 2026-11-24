@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Synonymer – Skriv &amp; Lær</title>
+<link rel="stylesheet" href="faelles.css" />
+</head>
+<body>
+<header>
+  <h1>💬 Synonymer</h1>
+  <div class="pill">🌟 <span id="hud-stjerner">0</span></div>
+  <div class="pill">🎁 <span id="hud-trofæer">0</span>/12</div>
+  <a class="btn grå" href="index.html">🏠 Menu</a>
+  <button id="btn-status">📊 Status</button>
+  <button id="btn-foraelder">👨‍👩‍👦 Forældre</button>
+</header>
+<div class="hoved" id="app"></div>
+<div class="overlay" id="overlay"><div class="indhold" id="overlay-indhold"></div></div>
+
+<script src="faelles/data-dansk.js"></script>
+<script src="faelles/motor.js"></script>
+<script>
+"use strict";
+startSide("synonym");
+bindFællesknapper();
+opdaterHUD();
+</script>
+</body>
+</html>

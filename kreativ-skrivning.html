@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kreativ skrivning – Skriv &amp; Lær</title>
+<link rel="stylesheet" href="faelles.css" />
+</head>
+<body>
+<header>
+  <h1>🪄 Kreativ skrivning</h1>
+  <div class="pill">🌟 <span id="hud-stjerner">0</span></div>
+  <div class="pill">🎁 <span id="hud-trofæer">0</span>/12</div>
+  <a class="btn grå" href="index.html">🏠 Menu</a>
+  <button id="btn-status">📊 Status</button>
+  <button id="btn-foraelder">👨‍👩‍👦 Forældre</button>
+</header>
+<div class="hoved" id="app"></div>
+<div class="overlay" id="overlay"><div class="indhold" id="overlay-indhold"></div></div>
+
+<script src="faelles/data-dansk.js"></script>
+<script src="faelles/motor.js"></script>
+<script>
+"use strict";
+function startKreativ(){
+  var k = KREATIVT[Math.floor(Math.random()*KREATIVT.length)];
+  var app = document.getElementById("app");
+  app.innerHTML = "<h2 class='område'>🪄 Kreativ skrivning</h2>"+
+  "<div class='kasse'>"+
+    "<h3>"+k.titel+" <span class='lvlbadge'>"+EMNE[k.emne]+"</span></h3>"+
+    "<div class='læsetekst'>"+k.prompt+"</div>"+
+    "<p><b>"+k.mængde+".</b> Brug gerne ord fra ordbanken – men kun de ord, du selv synes passer!</p>"+
+    "<div class='emnevalg'>"+k.ordbank.map(function(w){return "<button class='emne' data-ord='"+w+"'>"+w+"</button>";}).join("")+"</div>"+
+    "<textarea class='tekst' id='historie' placeholder=\"Der var engang…\"></textarea>"+
+    "<p id='taeller' class='tagline'>0 ord</p>"+
+    "<button class='btn grøn' id='Tjek' style='margin-top:10px'>Gem i min historiebog 📚</button>"+
+    "<button class='btn lilla' id='NyOpgave' style='margin-left:8px'>Ny opgave 🎲</button>"+
+    "<div class='feedback' id='fb'></div>"+
+    "<p class='tagline'>💡 Skrivetips: Start med \u201CDer var engang…\u201D, eller dyk lige ind i noget spændende. En historie har en begyndelse, en midte med et problem, og en afslutning, hvor problemet bliver løst (eller næsten!).</p>"+
+  "</div>";
+  var ta=document.getElementById("historie");
+  function tæller(){
+    var n=(ta.value.trim().match(/\S+/g)||[]).length;
+    document.getElementById("taeller").textContent = n+" ord"+(n<k.minOrd? " (målet er "+k.minOrd+")" : " ✅ målet er nået!");
+    return n;
+  }
+  ta.addEventListener("input",tæller);
+  Array.prototype.forEach.call(document.querySelectorAll(".emne[data-ord]"),function(btn){
+    btn.onclick=function(){
+      if(ta.value && !/\s$/.test(ta.value)) ta.value += " ";
+      ta.value += btn.getAttribute("data-ord")+" ";
+      ta.dispatchEvent(new Event("input")); ta.focus();
+    };
+  });
+  document.getElementById("NyOpgave").onclick=startKreativ;
+  document.getElementById("Tjek").onclick=function(){
+    var n=tæller();
+    var fb=document.getElementById("fb");
+    if(n<k.minOrd){
+      fb.className="feedback skidt";
+      fb.innerHTML="Din historie er på "+n+" ord. Prøv at skrive lidt mere – så sker der flere ting i historien! 🧙 Du mangler "+(k.minOrd-n)+" ord til målet.";
+      return;
+    }
+    var tekst=ta.value.trim();
+    var fejl=[];
+    if(!/^[A-ZÆØÅ]/.test(tekst)) fejl.push("Historien skal starte med stort bogstav.");
+    if(!/[.!?…]$/.test(tekst)) fejl.push("Historien skal slutte med punktum, udråbstegn eller spørgsmålstegn.");
+    if(/([.!?]\s+)([a-zæøå])/.test(tekst)) fejl.push("Efter et punktum skal der stort bogstav (kig efter sætninger, der starter med lille).");
+    if(fejl.length){
+      fb.className="feedback skidt";
+      fb.innerHTML="Din historie er god og lang nok! Men tjek lige disse småting, så teksten bliver helt korrekt:<br>• "+fejl.join("<br>• ")+"<br><br>Ret dem, og tryk på Gem igen.";
+      return;
+    }
+    S.historier.push({titel:k.titel, tekst:tekst, dato:new Date().toISOString(), emne:k.emne});
+    givStjerner(5,true);
+    fb.className="feedback god";
+    fb.innerHTML="📚 Din historie er gemt i historiebogen! +5 stjerner 🌟 Du kan læse den igen under 📊 Status – eller downloade den som fil.";
+    document.getElementById("Tjek").disabled=true;
+  };
+}
+startKreativ();
+bindFællesknapper();
+opdaterHUD();
+</script>
+</body>
+</html>

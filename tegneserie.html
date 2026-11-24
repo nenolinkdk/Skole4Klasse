@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tegneserie-bobler – Skriv &amp; Lær</title>
+<link rel="stylesheet" href="faelles.css" />
+</head>
+<body>
+<header>
+  <h1>🗣️ Tegneserie-bobler</h1>
+  <div class="pill">🌟 <span id="hud-stjerner">0</span></div>
+  <div class="pill">🎁 <span id="hud-trofæer">0</span>/12</div>
+  <a class="btn grå" href="index.html">🏠 Menu</a>
+  <button id="btn-status">📊 Status</button>
+  <button id="btn-foraelder">👨‍👩‍👦 Forældre</button>
+</header>
+<div class="hoved" id="app"></div>
+<div class="overlay" id="overlay"><div class="indhold" id="overlay-indhold"></div></div>
+
+<script src="faelles/data-dansk.js"></script>
+<script src="faelles/motor.js"></script>
+<script>
+"use strict";
+function tegnScene(scene){
+  if(scene==="minecraft"){
+    return "<rect x='0' y='0' width='400' height='120' fill='#8fd3ff'/>"+
+    "<rect x='0' y='120' width='400' height='180' fill='#7ec850'/>"+
+    "<rect x='40' y='60' width='60' height='66' fill='#8a5a2b'/>"+
+    "<rect x='60' y='102' width='20' height='24' fill='#5d3a1a'/>"+
+    "<rect x='90' y='66' width='20' height='20' fill='#4ddbff' opacity='0.85'></rect>"+
+    "<rect x='290' y='80' width='44' height='86' fill='#2aaa5b'/>"+
+    "<rect x='296' y='40' width='11' height='13' fill='#222'/><rect x='317' y='40' width='11' height='13' fill='#222'/>"+
+    "<rect x='296' y='92' width='11' height='13' fill='#222'/><rect x='317' y='92' width='11' height='13' fill='#222'/>"+
+    "<rect x='296' y='64' width='32' height='10' fill='#0c0'/><text x='150' y='30' font-size='14' fill='#1d3557'>⛏ Bygg-dag i Minecraft</text>";
+  }
+  if(scene==="skov"){
+    return "<rect x='0' y='0' width='400' height='300' fill='#cfeecf'/>"+
+    "<rect x='0' y='230' width='400' height='70' fill='#7aa85c'/>"+
+    "<rect x='60' y='100' width='26' height='140' fill='#7d5a3a'/><circle cx='73' cy='95' r='45' fill='#2e9e4f'/>"+
+    "<rect x='300' y='120' width='24' height='120' fill='#7d5a3a'/><circle cx='312' cy='115' r='40' fill='#37b45c'/>"+
+    "<ellipse cx='160' cy='255' rx='45' ry='12' fill='#b98a5f'/>"+
+    "<circle cx='250' cy='245' r='4' fill='#444'/><circle cx='262' cy='250' r='4' fill='#444'/><circle cx='274' cy='246' r='4' fill='#444'/>"+
+    "<text x='20' y='40' font-size='14' fill='#1d3557'>🌲 Spor i skoven</text>";
+  }
+  if(scene==="butik"){
+    return "<rect x='0' y='0' width='400' height='300' fill='#ffffff'/>"+
+    "<rect x='0' y='0' width='400' height='40' fill='#ff9f1c'/>"+
+    "<rect x='20' y='60' width='360' height='30' fill='#e3f0ff'/>"+
+    "<rect x='20' y='120' width='360' height='30' fill='#e3f0ff'/>"+
+    "<rect x='20' y='180' width='360' height='30' fill='#e3f0ff'/>"+
+    "<rect x='40' y='35' width='30' height='45' fill='#ffd23f'/><rect x='100' y='35' width='30' height='45' fill='#e63946'/>"+
+    "<rect x='160' y='35' width='30' height='45' fill='#2f6fd6'/>"+
+    "<rect x='350' y='250' width='35' height='50' fill='#8895a7'/><rect x='280' y='255' width='20' height='45' fill='#8895a7'/>"+
+    "<text x='140' y='26' font-size='14' fill='#ffffff'>🛒 INDKØB</text>";
+  }
+  return "<rect x='0' y='0' width='400' height='300' fill='#ffe9d6'/>"+
+  "<rect x='0' y='250' width='400' height='50' fill='#b98a5f'/>"+
+  "<rect x='40' y='80' width='140' height='120' fill='#ffd9a0'/><polygon points='40,80 110,30 180,80' fill='#e63946'/>"+
+  "<rect x='90' y='140' width='40' height='60' fill='#8a5a2b'/>"+
+  "<circle cx='260' cy='185' r='28' fill='#f2b23e'/>"+
+  "<polygon points='260,152 268,138 252,138' fill='#f2b23e'/>"+
+  "<ellipse cx='330' cy='220' rx='32' ry='18' fill='#4c4c4c'/><circle cx='372' cy='200' r='14' fill='#4c4c4c'/>"+
+  "<text x='215' y='265' font-size='13' fill='#1d3557'>🐱 = min allerbedste ven</text>";
+}
+function startSerie(){
+  var s = SERIER[Math.floor(Math.random()*SERIER.length)];
+  var app = document.getElementById("app");
+  app.innerHTML = "<h2 class='område'>🗣️ Skriv i tegneserien</h2>"+
+  "<div class='kasse'>"+
+    "<h3>"+s.titel+" <span class='lvlbadge'>"+EMNE[s.emne]+"</span></h3>"+
+    "<p>"+s.situation+"</p>"+
+    "<div style='position:relative;max-width:420px;border:3px solid #1d3557;border-radius:14px;overflow:hidden;background:#fff'>"+
+      "<svg viewBox='0 0 400 300' width='100%' style='display:block'>"+tegnScene(s.scene)+"</svg>"+
+      "<div class='bobbel' style='left:8px;top:8px;width:180px;height:70px'><input class='boble-input' id='b1' value=\""+s.start1.replace(/"/g,"&quot;")+"\"></div>"+
+      "<div class='bobbel' style='right:8px;bottom:8px;width:180px;height:70px'><input class='boble-input' id='b2' value=\""+s.start2.replace(/"/g,"&quot;")+"\"></div>"+
+    "</div>"+
+    "<p class='tagline'>✍️ Skriv i boblerne: Hvad siger <b>"+s.figur1+"</b> (øverst) og <b>"+s.figur2+"</b> (nederst)? Du må gøre samtalen helt din egen – brug din fantasi!</p>"+
+    "<button class='btn grøn' id='gemSerie'>Gem min tegneserie 🎨</button>"+
+    "<button class='btn lilla' id='nySerie' style='margin-left:8px'>Ny tegneserie 🎲</button>"+
+    "<div class='feedback' id='fb'></div>"+
+  "</div>";
+  document.getElementById("nySerie").onclick=startSerie;
+  document.getElementById("gemSerie").onclick=function(){
+    var t1=document.getElementById("b1").value.trim(), t2=document.getElementById("b2").value.trim();
+    var fb=document.getElementById("fb");
+    var fejl=[];
+    [[t1,s.figur1],[t2,s.figur2]].forEach(function(par){
+      var t=par[0], f=par[1];
+      if(t.length<8) fejl.push(f+" siger lidt for lidt – skriv en hel sætning.");
+      if(t.length>0 && !/^[A-ZÆØÅ]/.test(t)) fejl.push(f+"s boble skal starte med stort bogstav.");
+      if(t.length>0 && !/[.!?…]$/.test(t)) fejl.push(f+"s boble skal slutte med punktum, ! eller ?.");
+    });
+    if(fejl.length){
+      fb.className="feedback skidt";
+      fb.innerHTML="Din tegneserie er godt på vej! Tjek lige:<br>• "+fejl.join("<br>• ");
+      return;
+    }
+    S.tegneserier.push({serie:s.titel, figur1:s.figur1, tekst1:t1, figur2:s.figur2, tekst2:t2, dato:new Date().toISOString()});
+    givStjerner(4,true);
+    fb.className="feedback god";
+    fb.innerHTML="🎨 Din tegneserie er gemt! Her er dialogen:<br>"+
+     "<div style='background:#fbf7ec;border-radius:12px;padding:12px;margin-top:8px'>"+
+     "<b>"+s.figur1+":</b> \u201C"+t1.replace(/</g,"&lt;")+"\u201D<br><b>"+s.figur2+":</b> \u201C"+t2.replace(/</g,"&lt;")+"\u201D</div>"+
+     "<p style='margin-top:6px'>+4 stjerner 🌟 Se alle dine serier under 📊 Status – eller download dem som fil.</p>";
+    document.getElementById("gemSerie").disabled=true;
+  };
+}
+startSerie();
+bindFællesknapper();
+opdaterHUD();
+</script>
+</body>
+</html>
