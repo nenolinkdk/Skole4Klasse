@@ -18,6 +18,7 @@
 <div class="overlay" id="overlay"><div class="indhold" id="overlay-indhold"></div></div>
 
 <script src="faelles/data-dansk.js"></script>
+<script src="faelles/data-andet.js"></script>
 <script src="faelles/motor.js"></script>
 <script>
 "use strict";
@@ -28,9 +29,9 @@ var SIDE = [
  {fil:"synonymer.html",ikon:"💬",navn:"Ordføråd & synonymer",tag:"Kan man sige det i stedet? Find ordet, der betyder næsten det samme."},
  {fil:"kreativ-skrivning.html",ikon:"🪄",navn:"Kreativ skrivning",tag:"Skriv dine egne historier med hjælp fra en ordbank. De gemmes i din historiebog."},
  {fil:"tegneserie.html",ikon:"🗣️",navn:"Tegneserie-bobler",tag:"Skriv talebobler til små tegneserier og gem din serie."},
- {fil:"matematik.html",ikon:"➗",navn:"Matematik (kommer snart)",tag:"Regneopgaver, hvor du regner dig frem og samler stjerner.",kommer:true},
- {fil:"nyheder.html",ikon:"📰",navn:"Nyheder for børn (kommer snart)",tag:"Korte nyheder med læseforståelse.",kommer:true},
- {fil:"ai.html",ikon:"🤖",navn:"Om AI (kommer snart)",tag:"Hvad er kunstig intelligens? Quiz og eksperimenter.",kommer:true}
+ {fil:"matematik.html",ikon:"➗",navn:"Matematik",tag:"Regneopgaver, hvor du regner dig frem og samler stjerner. Fra plus og minus til brøker og decimaltal."},
+ {fil:"nyheder.html",ikon:"📰",navn:"Nyheder for børn",tag:"Læs korte, rigtige nyheder og svar på spørgsmålene."},
+ {fil:"ai.html",ikon:"🤖",navn:"Om AI",tag:"Hvad er kunstig intelligens? Korte tekster og quiz med forklaringer."}
 ];
 var app = document.getElementById("app");
 app.innerHTML = "<h2 style='text-align:center;color:#1d3557'>Hej! Vælg et område at træne 🚀</h2><div class='menu' id='menukort'></div>";
@@ -41,7 +42,7 @@ SIDE.forEach(function(k){
   if(!k.kommer) el.href = k.fil;
   if(k.kommer) el.style.opacity=".55";
   var prof = "";
-  var omr = { "laesning.html":"laesning","stavning.html":"stavning","bogstaver.html":"bogstaver","synonymer.html":"synonym" }[k.fil];
+  var omr = {"laesning.html":"laesning","stavning.html":"stavning","bogstaver.html":"bogstaver","synonymer.html":"synonym","matematik.html":"matematik","nyheder.html":"nyheder","ai.html":"ai"}[k.fil];
   if(omr){
     var oo=S.områder[omr];
     var pct = Math.min(100, Math.round(oo.mestrede.length/NIV[oo.niveau].behov*100));
