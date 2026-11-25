@@ -23,16 +23,22 @@
 <script src="faelles/motor.js"></script>
 <script>
 "use strict";
+function vælgNiveau(omr, n){
+  if(!S || !S.områder[omr]) return;
+  S.områder[omr].niveau = n;
+  gem(S);
+  location.reload();
+}
 var SIDE = [
  {fil:"laesning.html",ikon:"📖",navn:"Læsning & forståelse",tag:"Læs en tekst og svar på spørgsmål. Emner: natur, spil, videnskab, dagligdag, indkøb."},
  {fil:"stavning.html",ikon:"✏️",navn:"Stavning",tag:"Skriv ordene rigtigt. Laver du fejl, øver vi ordet igen, indtil du kan det."},
  {fil:"bogstaver.html",ikon:"🔤",navn:"Store & små bogstaver",tag:"Ret teksterne: navne, byer, sætningsstarter – alt skal have det rigtige bogstav."},
- {fil:"synonymer.html",ikon:"💬",navn:"Ordføråd & synonymer",tag:"Kan man sige det i stedet? Find ordet, der betyder næsten det samme."},
+ {fil:"synonymer.html",ikon:"💬",navn:"Ordforråd & synonymer",tag:"Kan man sige det i stedet? Find ordet, der betyder næsten det samme."},
  {fil:"kreativ-skrivning.html",ikon:"🪄",navn:"Kreativ skrivning",tag:"Skriv dine egne historier med hjælp fra en ordbank. De gemmes i din historiebog."},
  {fil:"tegneserie.html",ikon:"🗣️",navn:"Tegneserie-bobler",tag:"Skriv talebobler til små tegneserier og gem din serie."},
  {fil:"matematik.html",ikon:"➗",navn:"Matematik",tag:"Regn dig gennem 5 verdener: plus/minus, gange, division, brøker og virkeligheds-opgaver. Saml diamanter!"},
  {fil:"nyheder.html",ikon:"📰",navn:"Nyheder for børn",tag:"Læs korte, rigtige nyheder – og vær detektiv: ægte nyhed eller fake news?"},
- {fil:"ai.html",ikon:"🤖",navn:"Om AI",tag:"Hvad er kunstig intelligens? Korte tekster og quiz med forklaringer."}
+ {fil:"ai.html",ikon:"🤖",navn:"Om AI",tag:"Hvad er AI? Robotter, chatbotter, AI i hverdagen og i skolen – korte tekster og quiz."}
 ];
 var TILES = {"laesning.html":"laesning","stavning.html":"stavning","bogstaver.html":"bogstaver","synonymer.html":"synonym","matematik.html":"matematik","nyheder.html":"nyheder","ai.html":"ai"};
 var app = document.getElementById("app");
@@ -69,15 +75,30 @@ SIDE.forEach(function(k){
   if(omr){
     var oo=S.områder[omr];
     var pct = Math.min(100, Math.round(oo.mestrede.length/NIV[oo.niveau].behov*100));
-    prof = "<div class='skridt'><i style='width:"+pct+"%'></i></div><div class='tagline'>Niveau "+oo.niveau+" ("+NIV[oo.niveau].navn+") · "+oo.mestrede.length+" mestrede opgaver</div>";
+    prof = "<div class='skridt'><i style='width:"+pct+"%'></i></div><div class='tagline'>Niveau "+oo.niveau+" ("+NIV[oo.niveau].navn+") · "+oo.mestrede.length+" mestrede opgaver</div>"+
+      "<div style='margin-top:6px' id='nv-"+omr+"'></div>";
   } else {
     prof = "<div class='tagline'>🪄 Kreativt område – se historiebog under 📊 Status</div>";
   }
   el.innerHTML = "<div class='ikon'>"+k.ikon+"</div><h2>"+k.navn+"</h2><p>"+k.tag+"</p>"+prof;
   m.appendChild(el);
+  if(omr){
+    var nv = document.getElementById("nv-"+omr);
+    [1,2,3].forEach(function(n){
+      var b = document.createElement("button");
+      b.className = "btn "+(S.områder[omr].niveau===n? "grøn":"grå");
+      b.style.cssText = "padding:3px 8px;font-size:.75rem;margin:2px";
+      b.textContent = NIV[n].navn;
+      b.setAttribute("onclick","event.preventDefault();event.stopPropagation();vælgNiveau('"+omr+"',"+n+")");
+      nv.appendChild(b);
+    });
+  }
 });
 bindFællesknapper();
 opdaterHUD();
 </script>
+<footer style="text-align:center;padding:16px;color:#8a8f98;font-size:.8rem">
+  Skriv &amp; Lær · Udgave 0.1 · Copyright © Nenolink
+</footer>
 </body>
 </html>

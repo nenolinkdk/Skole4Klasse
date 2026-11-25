@@ -222,6 +222,23 @@ function startVerden(id){
       }
     };
     knapper.appendChild(b);
+    var sp = document.createElement("button");
+    sp.className="btn grå"; sp.style.marginTop="8px"; sp.style.marginLeft="8px"; sp.textContent="⏭️ Spring over";
+    sp.onclick = function(){ wrap.remove(); køen.push(o); visOpgave(); };
+    var gv = document.createElement("button");
+    gv.className="btn orange"; gv.style.marginTop="8px"; gv.style.marginLeft="8px"; gv.textContent="🏳️ Vis svaret";
+    gv.onclick = function(){
+      var fb2 = document.getElementById("fb");
+      fb2.className="feedback";
+      fb2.innerHTML = "Svaret er: <b>"+o.svar[0]+"</b> – vink: "+o.vink+" <br>Kig godt på det, så kan du regne det selv næste gang! 👀";
+      sp.disabled = true;
+      var v = document.createElement("button");
+      v.className="btn blå"; v.style.marginTop="10px"; v.style.marginLeft="8px"; v.textContent="Videre ➡️";
+      v.onclick = function(){ wrap.remove(); visOpgave(); };
+      knapper.appendChild(v);
+    };
+    knapper.appendChild(sp);
+    knapper.appendChild(gv);
   }
   visOpgave();
 }
